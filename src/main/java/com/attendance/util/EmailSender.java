@@ -1,9 +1,11 @@
 package com.attendance.util;
 
+import com.sendgrid.Method;
+import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.Email;
-import com.sendgrid.helpers.mail.Content;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,7 @@ public class EmailSender {
     @Value("${app.mail.from:noreply@attendance-system.com}")
     private String fromEmail;
     
-    public EmailSender(@Value("${sendgrid.api-key}") String sendGridApiKey) {
+    public EmailSender(@Value("${app.mail.sendgrid-api-key}") String sendGridApiKey) {
         this.sendGrid = new SendGrid(sendGridApiKey);
     }
     
@@ -36,7 +38,7 @@ public class EmailSender {
                 new Content("text/html", htmlContent)
             );
             
-            com.sendgrid.helpers.mail.Response response = sendGrid.api(
+            Response response = sendGrid.api(
                 new com.sendgrid.Request() {{
                     setMethod(Method.POST);
                     setEndpoint("mail/send");

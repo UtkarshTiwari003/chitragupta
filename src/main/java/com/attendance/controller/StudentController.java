@@ -8,15 +8,19 @@ import com.attendance.service.StudentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.Map;
 
 /**
  * Student controller - manages students
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping
 public class StudentController {
     
     private final StudentService studentService;
@@ -72,5 +76,30 @@ public class StudentController {
             @RequestParam Long subjectId) {
         EnrollmentDTO enrollment = studentService.enrollStudent(studentId, subjectId);
         return ResponseEntity.ok(ApiResponse.success(201, "Enrollment successful", enrollment));
+    }
+
+    /**
+     * Get the authenticated student's external test/score link.
+     */
+    @GetMapping("/student/test-link")
+    public ResponseEntity<ApiResponse<Map<String, String>>> getMyTestLink(
+            @RequestAttribute("userId") Long userId) {
+        String testLink = studentService.getTestLinkForUserId(userId);
+        return ResponseEntity.ok(ApiResponse.success(Map.of("testLink", testLink != null ? testLink : "")));
+    }
+
+    /**
+     * Redirect the authenticated student to their configured external test/score link.
+     */
+    @GetMapping("/student/test-link/redirect")
+    public ResponseEntity<Void> redirectToMyTestLink(@RequestAttribute("userId") Long userId) {
+        String testLink = studentService.getTestLinkForUserId(userId);
+        if (testLink == null || testLink.isBlank()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.status(302)
+            .header(HttpHeaders.LOCATION, URI.create(testLink).toString())
+            .build();
     }
 }

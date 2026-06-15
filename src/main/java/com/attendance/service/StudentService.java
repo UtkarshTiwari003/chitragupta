@@ -141,6 +141,26 @@ public class StudentService {
         
         return new PageImpl<>(dtos, pageable, students.getTotalElements());
     }
+
+    /**
+     * Resolve the authenticated user's Student profile id for student-owned endpoints.
+     */
+    @Transactional(readOnly = true)
+    public Long getStudentIdForUserId(Long userId) {
+        return studentRepository.findByUserId(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("Student", "userId", userId))
+            .getId();
+    }
+
+    /**
+     * Get the external test/score link configured for the authenticated student.
+     */
+    @Transactional(readOnly = true)
+    public String getTestLinkForUserId(Long userId) {
+        return studentRepository.findByUserId(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("Student", "userId", userId))
+            .getGoogleSheetsLink();
+    }
     
     /**
      * Enroll student in subject

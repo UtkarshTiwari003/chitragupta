@@ -20,16 +20,15 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>21</java.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         
         <!-- Dependency Versions -->
-        <springdoc-openapi.version>2.2.0</springdoc-openapi.version>
-        <sendgrid.version>4.10.2</sendgrid.version>
-        <google-sheets.version>v4-rev614-1.25.0</google-sheets.version>
-        <jjwt.version>0.12.3</jjwt.version>
-        <lombok.version>1.18.30</lombok.version>
+        <springdoc-openapi.version>2.5.0</springdoc-openapi.version>
+        <sendgrid.version>4.10.3</sendgrid.version>
+        <jjwt.version>0.12.5</jjwt.version>
+        <lombok.version>1.18.32</lombok.version>
     </properties>
 
     <dependencies>
@@ -51,6 +50,11 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
@@ -68,7 +72,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.1</version>
+            <version>42.7.3</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -103,13 +107,12 @@
             <groupId>com.sendgrid</groupId>
             <artifactId>sendgrid-java</artifactId>
             <version>${sendgrid.version}</version>
-        </dependency>
-
-        <!-- Google Sheets API -->
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-sheets</artifactId>
-            <version>${google-sheets.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Lombok -->
@@ -154,7 +157,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Development Tools -->
@@ -185,11 +188,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.13.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
-                    <release>21</release>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <release>${java.version}</release>
                 </configuration>
             </plugin>
 
@@ -197,14 +200,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.2.5</version>
             </plugin>
 
             <!-- JaCoCo for Code Coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.10</version>
+                <version>0.8.12</version>
                 <executions>
                     <execution>
                         <goals>

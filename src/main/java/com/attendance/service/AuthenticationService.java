@@ -83,6 +83,31 @@ public class AuthenticationService {
             .user(UserDTO.from(user))
             .build();
     }
+
+    /**
+     * Create application JWTs for a user authenticated by an OAuth2/OIDC provider.
+     */
+    @Transactional(readOnly = true)
+    public LoginResponse loginWithOAuthEmail(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new AuthenticationException("OAuth account is not registered: " + email));
+
+        if (!user.getIsActive()) {
+            throw new AuthenticationException("Account is inactive");
+        }
+
+        String accessToken = jwtTokenProvider.generateAccessToken(user);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user);
+
+        log.info("User logged in with OAuth: {}", user.getEmail());
+
+        return LoginResponse.builder()
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .expiresIn(3600L)
+            .user(UserDTO.from(user))
+            .build();
+    }
     
     /**
      * Register new user (teacher use only)

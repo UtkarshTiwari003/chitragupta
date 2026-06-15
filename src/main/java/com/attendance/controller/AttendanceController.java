@@ -4,6 +4,7 @@ import com.attendance.dto.ApiResponse;
 import com.attendance.dto.MarkAttendanceRequest;
 import com.attendance.model.Attendance;
 import com.attendance.service.AttendanceService;
+import com.attendance.service.StudentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +19,15 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping
 public class AttendanceController {
     
     private final AttendanceService attendanceService;
+    private final StudentService studentService;
     
-    public AttendanceController(AttendanceService attendanceService) {
+    public AttendanceController(AttendanceService attendanceService, StudentService studentService) {
         this.attendanceService = attendanceService;
+        this.studentService = studentService;
     }
     
     /**
@@ -59,7 +62,8 @@ public class AttendanceController {
         LocalDate fromDate = from != null ? from : LocalDate.now().withDayOfMonth(1);
         LocalDate toDate = to != null ? to : LocalDate.now();
         
-        List<Attendance> records = attendanceService.getAttendanceRecords(userId, fromDate, toDate);
+        Long studentId = studentService.getStudentIdForUserId(userId);
+        List<Attendance> records = attendanceService.getAttendanceRecords(studentId, fromDate, toDate);
         return ResponseEntity.ok(ApiResponse.success(records));
     }
     
@@ -71,7 +75,8 @@ public class AttendanceController {
             @RequestAttribute("userId") Long userId) {
         
         Map<String, Object> result = new HashMap<>();
-        result.put("percentage", attendanceService.calculateAttendancePercentage(userId));
+        Long studentId = studentService.getStudentIdForUserId(userId);
+        result.put("percentage", attendanceService.calculateAttendancePercentage(studentId));
         
         return ResponseEntity.ok(ApiResponse.success(result));
     }

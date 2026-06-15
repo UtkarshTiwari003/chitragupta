@@ -4,6 +4,7 @@ import com.attendance.dto.ApiResponse;
 import com.attendance.dto.RecordPaymentRequest;
 import com.attendance.model.Fee;
 import com.attendance.service.FeeService;
+import com.attendance.service.StudentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +18,15 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping
 public class FeeController {
     
     private final FeeService feeService;
+    private final StudentService studentService;
     
-    public FeeController(FeeService feeService) {
+    public FeeController(FeeService feeService, StudentService studentService) {
         this.feeService = feeService;
+        this.studentService = studentService;
     }
     
     /**
@@ -53,7 +56,8 @@ public class FeeController {
     @GetMapping("/student/fees/my-status")
     public ResponseEntity<ApiResponse<List<Fee>>> getMyFeeStatus(
             @RequestAttribute("userId") Long userId) {
-        List<Fee> fees = feeService.getStudentFees(userId);
+        Long studentId = studentService.getStudentIdForUserId(userId);
+        List<Fee> fees = feeService.getStudentFees(studentId);
         return ResponseEntity.ok(ApiResponse.success(fees));
     }
     

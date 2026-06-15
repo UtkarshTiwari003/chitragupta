@@ -69,7 +69,7 @@ public class ReportService {
     /**
      * Scheduled task: Generate monthly reports at 11 PM on last day of month
      */
-    @Scheduled(cron = "0 23 L * * ?")
+    @Scheduled(cron = "0 0 23 L * *")
     @Transactional
     public void generateMonthlyReports() {
         YearMonth yearMonth = YearMonth.now().minusMonths(1);
