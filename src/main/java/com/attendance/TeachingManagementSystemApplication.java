@@ -66,7 +66,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         )
     }
 )
-public class AttendanceSystemApplication {
+public class TeachingManagementSystemApplication {
 
     /**
      * Application entry point.
@@ -75,6 +75,6 @@ public class AttendanceSystemApplication {
      * @param args Command line arguments (not used)
      */
     public static void main(String[] args) {
-        SpringApplication.run(AttendanceSystemApplication.class, args);
+        SpringApplication.run(TeachingManagementSystemApplication.class, args);
     }
 }
