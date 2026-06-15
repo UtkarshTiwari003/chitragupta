@@ -78,3 +78,55 @@ public class TeachingManagementSystemApplication {
         SpringApplication.run(TeachingManagementSystemApplication.class, args);
     }
 }
+
+//JVM starts
+//  │
+//          ▼
+//main()
+//  │
+//          ▼
+//          SpringApplication.run()
+//  │
+//          ▼
+//Create ApplicationContext
+//  │
+//          ▼
+//Component Scan
+//        (@Component, @Service, @Repository, @Controller)
+//  │
+//          ▼
+//Instantiate Beans
+//  │
+//          ▼
+//Dependency Injection
+//        (Constructor/@Autowired)
+//  │
+//          ▼
+//@PostConstruct methods
+//  │
+//          ▼
+//CommandLineRunner/ApplicationRunner
+//  │
+//          ▼
+//Start Embedded Tomcat
+//  │
+//          ▼
+//Application Ready
+//  │
+//          ▼
+//Wait for HTTP Requests
+//  │
+//          ▼
+//Controller
+//  │
+//          ▼
+//Service
+//  │
+//          ▼
+//Repository
+//  │
+//          ▼
+//Database
+//  │
+//          ▼
+//Response returned
