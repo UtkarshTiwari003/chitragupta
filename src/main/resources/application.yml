@@ -1,0 +1,280 @@
+spring:
+  application:
+    name: attendance-system
+    
+  # JPA/Hibernate Configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Use Flyway/Liquibase for migrations in production
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+          fetch_size: 50
+        order_inserts: true
+        order_updates: true
+    show-sql: false
+    open-in-view: false
+    
+  # PostgreSQL Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/attendance_db
+    username: postgres
+    password: postgres
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      auto-commit: false
+      
+  # Redis Cache Configuration
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000  # 10 minutes
+      
+  redis:
+    host: localhost
+    port: 6379
+    password: 
+    timeout: 2000
+    database: 0
+    jedis:
+      pool:
+        max-active: 20
+        max-idle: 10
+        min-idle: 5
+        
+  # Security Configuration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080
+          
+  # MVC Configuration
+  mvc:
+    cors:
+      allowed-origins: http://localhost:4200,http://localhost:4201
+      allowed-methods: GET,POST,PUT,DELETE,OPTIONS,PATCH
+      allowed-headers: "*"
+      exposed-headers: X-Total-Count,X-RateLimit-Limit,X-RateLimit-Remaining
+      allow-credentials: true
+      max-age: 3600
+      
+  # Jackson Configuration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      indent-output: true
+    default-property-inclusion: non_null
+    time-zone: UTC
+    locale: en_IN
+    
+  # Mail Configuration (SendGrid)
+  mail:
+    host: smtp.sendgrid.net
+    port: 587
+    username: apikey
+    # password: Set via environment variable SENDGRID_API_KEY
+
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+  tomcat:
+    threads:
+      max: 100
+      min-spare: 10
+    max-connections: 200
+    connection-timeout: 20000
+    accept-count: 100
+  compression:
+    enabled: true
+    min-response-size: 1024
+    
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.attendance: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/application.log
+    max-size: 10MB
+    max-history: 30
+    
+# Actuator Configuration (Health Checks)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info,env,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: when-authorized
+  metrics:
+    export:
+      simple:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+      environment: ${ENVIRONMENT:dev}
+      
+# Springdoc OpenAPI Configuration
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  show-actuator: true
+  group-configs:
+    - group: "Authentication"
+      paths-to-match: "/auth/**"
+    - group: "Student Management"
+      paths-to-match: "/students/**"
+    - group: "Attendance"
+      paths-to-match: "/attendance/**"
+    - group: "Fee Management"
+      paths-to-match: "/fees/**"
+    - group: "Reports"
+      paths-to-match: "/reports/**"
+    - group: "Subjects & Enrollment"
+      paths-to-match: "/subjects/**,/enrollments/**"
+      
+# Application-Specific Configuration
+app:
+  jwt:
+    secret: ${JWT_SECRET:your-secret-key-change-in-production-at-least-256-bit}
+    expiration: 3600  # 1 hour in seconds
+    refresh-expiration: 604800  # 7 days in seconds
+    
+  mail:
+    from: noreply@attendance-system.com
+    from-name: Attendance System
+    sendgrid-api-key: ${SENDGRID_API_KEY:your-api-key-here}
+    
+  google:
+    sheets:
+      api-key: ${GOOGLE_SHEETS_API_KEY:your-api-key-here}
+      
+  security:
+    cors-allowed-origins: localhost:4200
+    jwt-secret-length: 256
+    password-encoder: bcrypt
+    bcrypt-strength: 12
+    
+  notifications:
+    batch-size: 100
+    retry-max-attempts: 3
+    retry-delay-seconds: 300  # 5 minutes
+    
+  report:
+    star-rating-cutoffs:
+      five-star:
+        attendance: 95
+        score: 90
+        outstanding-fees: 0
+      four-star:
+        attendance: 90
+        score: 80
+        outstanding-fees: 1
+      three-star:
+        attendance: 75
+        score: 70
+        outstanding-fees: 2
+      two-star:
+        attendance: 75
+        score: 60
+      one-star:
+        attendance: 0
+        score: 0
+        
+  fee:
+    reminder-days-after-due: 5
+    max-payment-retries: 3
+    
+  attendance:
+    low-attendance-threshold: 75  # Percentage
+    check-frequency-days: 7
+    
+---
+# Profile: dev
+spring:
+  config:
+    activate:
+      on-profile: dev
+  jpa:
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      
+logging:
+  level:
+    root: INFO
+    com.attendance: DEBUG
+    
+---
+# Profile: test
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+      
+logging:
+  level:
+    root: WARN
+    
+---
+# Profile: prod
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  redis:
+    host: ${REDIS_HOST:redis}
+    password: ${REDIS_PASSWORD}
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    
+logging:
+  level:
+    root: WARN
+    com.attendance: INFO
+    
+server:
+  tomcat:
+    threads:
+      max: 200

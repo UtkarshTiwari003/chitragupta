@@ -1,0 +1,101 @@
+# IDE & Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Build & Maven
+target/
+build/
+dist/
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+
+# Gradle
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# Testing
+*.class
+*.log
+test-results/
+coverage/
+.coverage
+htmlcov/
+
+# Dependencies
+node_modules/
+vendor/
+.mvn/wrapper/maven-wrapper.jar
+
+# Database
+*.db
+*.sqlite
+*.h2.db
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Environment
+.env
+.env.local
+.env.*.local
+.properties.local
+
+# OS
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Git
+.git/
+.gitattributes
+.gitmodules
+
+# Runtime
+tmp/
+temp/
+cache/
+*.pid
+
+# Application
+config/application-local.yml
+config/application-prod.yml
+src/main/resources/application-local.yml
+src/main/resources/application-prod.yml
+
+# Secrets (never commit!)
+secret.txt
+api-keys.txt
+credentials.json
+*secret*
+*password*
+*token*
+
+# IDE run configurations
+.run/
+
+# Miscellaneous
+.vagrant/
+Vagrantfile
+TAGS
+TODO.txt
